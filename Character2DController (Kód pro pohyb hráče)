@@ -1,0 +1,57 @@
+using UnityEngine;
+
+public class Character2DController : MonoBehaviour {
+    Vector3 startingPos;
+    public float movementSpeed = 1;
+    public float JumpForce = 1;
+    private bool lookingRight = true;
+
+
+    SpriteRenderer spriteRender;
+
+    Transform gunTip;
+
+    private Rigidbody2D _rigidbody;
+    // Start is called before the first frame update
+    private void Start()
+    {
+        _rigidbody = GetComponent<Rigidbody2D>();
+        spriteRender = GetComponent<SpriteRenderer>();
+        startingPos = transform.position;
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        var movement = Input.GetAxis("Horizontal");
+        if(movement < 0 && lookingRight) {
+            Flip();
+        } 
+        if(movement > 0 && !lookingRight) {
+            Flip();
+        }
+        
+        transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * movementSpeed;
+        
+        if(Input.GetButtonDown("Jump") && Mathf.Abs(_rigidbody.velocity.y) < 0.001f) {
+            _rigidbody.AddForce(new Vector2(0, JumpForce), ForceMode2D.Impulse);
+        }
+    }
+
+    private void Flip() {
+        lookingRight = !lookingRight;
+
+        transform.Rotate(0f, 180f, 0f);
+    }
+
+    private void Die() {
+        transform.position = startingPos;
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Respawn" || col.tag == "Enemy") {
+            Die();
+        }
+    }
+}
