@@ -1,0 +1,36 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+
+    public int HP = 100;
+
+    Vector3 startingPos;
+    void Start()
+    {
+        startingPos = transform.position;
+    }
+
+    void Update()
+    {
+        if(HP <= 0) {
+            Die();
+        }
+    }
+
+    void Die() {
+        Destroy(gameObject);
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Bullet") {
+            HP -= 10;
+        } else if(col.tag == "Player") {
+            HP = 100;
+            transform.position = startingPos;
+        }
+    }
+}
